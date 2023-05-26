@@ -22,3 +22,4 @@ console.log(functionResult);
 
 // 함수의 input -> 매개변수(매개체가 되는 변수!)
 // returen문 뒤에 오는 값 = 반환값!
+
