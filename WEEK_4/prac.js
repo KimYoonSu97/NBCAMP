@@ -1,3 +1,5 @@
+'use strict'
+
 class HttpError extends Error {
     constructor(response) {
       super(`${response.status} for ${response.url}`);
@@ -19,12 +21,12 @@ class HttpError extends Error {
   
   async function narutoIsNotOtaku() {
     let title;
-    let res;
+    // let res;
     while(true) {
       title = prompt("애니메이션 제목을 입력하세요.", "naruto");
 
-      try{
-        res = await loadJson(
+      try{ 
+         res = await loadJson(
           `https://animechan.vercel.app/api/random/anime?title=${title}`
           )
           break

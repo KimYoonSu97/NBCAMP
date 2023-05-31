@@ -6,83 +6,21 @@ const options = {
   }
 };
 
-//DOM APT
-// 메인 비주얼 영역
 let movieMain = document.querySelector(".slide-inner")
-// 하단 영화 카드 영역
 let movieList = document.querySelector("#movie-list");
+let movieout
 
-//인풋값 받기
-let getInput = function() {
-  const inputVal = document.getElementById("search-input").value;
-  return inputVal
-}
-
-//엔터키로 서치하기
-function fnEnterKey () {
-  if (window.event.keyCode == 13) {
-    pushButton()
-  }
-}
-
-//검색버튼 활성화 하기
-let pushButton = function () {
-    console.log('클릭했습니다.')
-    let inputval = getInput()
-    console.log(inputval)
-
-    fetch('https://api.themoviedb.org/3/movie/top_rated?language=en-US&page=1', options)
-    .then(response => response.json())
-    .then(data =>  {
-        // console.log(data)
-        // 데이터를 받습니다. movie로...
-          const movie = data.results
-        // 투표의 평균과 투표수를 기준으로 객체배열을 정렬합니다.
-          movie.sort((a, b) => {
-              return b['vote_average'] - a['vote_average'] || b['vote_count'] - a['vote_count']
-            });
-            
-            //새로운 데이터를 append 하기 전 html을 비워줍니다.
-            movieList.innerHTML=""
-            movieMain.innerHTML=""
-  
-          // 검색창에 들어온 단어가 있는 것들만 담는 배열
-           const movie2 = movie.filter(function(item){
-          return item.title.match(new RegExp(inputval, "i"))
-          })
-            
-            //데이터를 기반으로 그립니다...
-            mainDraw(movie)
-            listDraw(movie2)
-            
-          
-
-          })
-          .catch(err => console.error(err));
-}
-
-//
 let mainDraw = function(keyvalue = Array) {
-        // movie배열을 가지고 반복문을 활용하여 데이터를 출력해줍니다.
-        keyvalue.forEach((a, b) => {
-        
-          //각 자료들을 변수에 담습니다.
-          let name = a["title"]
-          let rating = a["vote_average"]
-          let vote = a["vote_count"]
-          let overview = a["overview"]
-          let imgSrc = a["poster_path"]
-          let id = a["id"]
-          let temp_html = "";
-          // 만약 인덱스가 3보다 작으면 -> 즉 1,2,3등은
-          if(b < 3) {
-            // 상단 스크롤 배너 영역의 html코드를 백틱을 활용하여 입력합니다.
-          temp_html =`
-          <div class="slide">
-            <div class="slide-num" onclick="idAlert(this)">
-                <div class="slide-img">
-                <img src="https://image.tmdb.org/t/p/w500${imgSrc}" alt="${name} poster">
-                </div>
+  keyvalue.forEach((a, b) => {
+    let { title: name, vote_average: rating, vote_count: vote, overview, poster_path: imgSrc, id } = a
+    let temp_html
+    if(b < 3) {
+      temp_html =`
+      <div class="slide">
+      <div class="slide-num" onclick="idAlert(this)">
+      <div class="slide-img">
+      <img src="https://image.tmdb.org/t/p/w500${imgSrc}" alt="${name} poster">
+      </div>
                 <div class="slide-info">
                     <div class="rank">Rank ${b + 1}</div>
                     <div class="title" id="${id}">${name}</div>
@@ -91,10 +29,7 @@ let mainDraw = function(keyvalue = Array) {
                 </div>
             </div>
           </div>`;
-          // 상단에 선언해놓은 movieMain이라는 위치에 temp_html을 append합니다.
           movieMain.insertAdjacentHTML("beforeend",temp_html)
-
-          // 만약 그렇지 않다면...즉 3위 이후의 자료들은
           }
       })
       console.log("메인 영역은 성공!")
@@ -103,14 +38,9 @@ let mainDraw = function(keyvalue = Array) {
 let listDraw = function(keyvalue = Array) {
       // 새롭게 temp_html에 값을 할당하고.
       keyvalue.forEach((a, b) => {
-        
-        //각 자료들을 변수에 담습니다.
-        let name = a["title"]
-        let rating = a["vote_average"]
-        let vote = a["vote_count"]
-        let overview = a["overview"]
-        let imgSrc = a["poster_path"]
-        let id = a["id"]
+        //구조분해할당 / 키값을 그대로 활용 하거나 : 변수명 으로 지정이 가능하다.
+        let { title: name, vote_average: rating, vote_count: vote, overview, poster_path: imgSrc, id } = a
+
         let temp_html = "";
 
         if( b >= 3){
@@ -137,51 +67,81 @@ let listDraw = function(keyvalue = Array) {
        )
       console.log('리스트도 성공')
       };
-
-
+      
   fetch('https://api.themoviedb.org/3/movie/top_rated?language=en-US&page=1', options)
   .then(response => response.json())
   .then(data =>  {
-      // console.log(data)
-      // 데이터를 받습니다. movie로...
+        movieout = data.results
         const movie = data.results
-      // 투표의 평균과 투표수를 기준으로 객체배열을 정렬합니다.
+
         movie.sort((a, b) => {
             return b['vote_average'] - a['vote_average'] || b['vote_count'] - a['vote_count']
           });
           
-          //새로운 데이터를 append 하기 전 html을 비워줍니다.
           movieList.innerHTML=""
           movieMain.innerHTML=""
-
-        // 검색창에 들어온 단어가 있는 것들만 담는 배열
-         const movie2 = movie.filter(function(item){
-        return item.title.match(new RegExp("검색창에 들어온 단어", "i"))
-        })
           
-          //데이터를 기반으로 그립니다...
           mainDraw(movie)
           listDraw(movie)
           
         })
         .catch(err => console.error(err));
 
-
-
-// let onClickImg = function() {
-//   document.
-// }
-
         
-function idAlert(idclick) {
-  // console.log(idclick)
-  let titleSelector = idclick.querySelector(".title")
-  alert(`movie id is... ${titleSelector.id}`)
+let getInput = function() {
+  const inputVal = document.getElementById("search-input").value;
+  return inputVal
 }
 
+function fnEnterKey () {
+  if (window.event.keyCode == 13) {
+    pushButton()
+  }
+}
 
+let inputval
+let pushButton = function () {
+    console.log('클릭했습니다.')
+    inputval = getInput()
+     movieList.innerHTML=""
 
+    movieSearch = movieout.filter(function(item){
+      return item.title.match(new RegExp(inputval, "i"))
+    })
 
+    console.log(movieSearch)
+    movieSearch.forEach((a, b) => {
+    let { title: name, vote_average: rating, vote_count: vote, overview, poster_path: imgSrc, id } = a
+     
+    let temp_html = "";
+    
+    temp_html =`
+      <div class="list-content">
+        <div class="list-num" onclick="idAlert(this)">
+          <div class="rank">
+            <div>Rank</div>
+            <div>${b + 1}</div>
+           </div>
+           <div class="list-img" style="">
+             <img src="https://image.tmdb.org/t/p/w500${imgSrc}" alt="name poster">
+           </div>
+           <div class="list-info" >
+           <div class="title" id="${id}">${name}</div>
+           <div class="rating">Rating : ${rating} / vote : ${vote}</div>
+           <div class="caption">${overview}</div>
+          </div>
+        </div>
+      </div>`;
+      movieList.insertAdjacentHTML("beforeend",temp_html)
+
+})
+console.log('리스트 검색 성공')
+            }
+     
+function idAlert(idclick) {
+  let titleSelector = idclick.querySelector(".title")
+  alert(`movie id is ${titleSelector.id}`)
+}
 
 
 
